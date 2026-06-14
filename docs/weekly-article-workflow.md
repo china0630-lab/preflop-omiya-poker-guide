@@ -31,3 +31,29 @@ https://固定サイトURL/#article/{article-id}
 - スマホで画像と本文が横にはみ出さない
 - 日付とカテゴリが正しい
 
+## Markdown原稿から雛形を作る
+
+ユウジさんからMarkdownやテキスト原稿を受け取ったら、まず `drafts/` に保存します。
+
+例:
+
+```text
+drafts/2026-06-20-btn-open-range.md
+```
+
+次に補助スクリプトを実行します。
+
+```bash
+node scripts/make-article.mjs drafts/2026-06-20-btn-open-range.md
+```
+
+出力された記事オブジェクトを `content/articles.js` の配列末尾に追加します。
+
+見出しと本文の変換ルール:
+
+- `# タイトル` → 記事タイトル
+- `## 見出し` → 記事内見出し
+- `> 強調文` → コールアウト
+- その他の行 → 段落
+
+このスクリプトは記事追加の下書き作成用です。最終公開前に `subtitle`, `summary`, `tags`, `category` は人の目で整えてください。
