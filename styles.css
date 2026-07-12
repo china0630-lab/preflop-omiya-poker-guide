@@ -18,6 +18,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -28,6 +29,8 @@ body {
     var(--soft);
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
   line-height: 1.75;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 a {
@@ -51,6 +54,8 @@ img {
   background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid rgba(216, 222, 232, 0.86);
   backdrop-filter: blur(16px);
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .brand {
@@ -114,6 +119,8 @@ main {
   margin: 0 auto;
   padding: 34px 0 64px;
   outline: none;
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .hero {
@@ -124,13 +131,28 @@ main {
   min-height: 520px;
 }
 
-.hero-copy h1,
-.page-title h1,
-.article-hero h1 {
+.hero-copy h1 {
   margin: 0;
   font-size: clamp(2.45rem, 6vw, 5.5rem);
   line-height: 1.02;
   letter-spacing: 0;
+}
+
+.page-title h1,
+.article-hero h1 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.page-title h1 {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+}
+
+.article-hero h1 {
+  font-size: clamp(2.2rem, 5.2vw, 4.4rem);
 }
 
 .lead,
@@ -238,12 +260,19 @@ main {
 .article-library,
 .other-contents {
   margin-top: 46px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-.cards {
+.cards,
+.series-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+}
+
+.series-list {
+  grid-template-columns: 1fr;
 }
 
 .article-card,
@@ -260,28 +289,52 @@ main {
 
 .article-card,
 .link-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
   gap: 12px;
   padding: clamp(18px, 3vw, 26px);
   text-decoration: none;
   box-shadow: 0 10px 28px rgba(17, 24, 39, 0.06);
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.link-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.article-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .card-thumb {
   display: grid;
   place-items: center;
-  height: clamp(180px, 24vw, 260px);
-  margin: -6px -6px 4px;
+  min-height: clamp(180px, 24vw, 260px);
+  height: 100%;
+  margin: 0;
   overflow: hidden;
   background: #f8fafc;
   border: 1px solid var(--line);
   border-radius: 12px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .card-thumb img {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
 }
 
@@ -290,12 +343,21 @@ main {
   margin: 0;
   font-size: clamp(1.22rem, 2.4vw, 1.7rem);
   line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .article-card p,
 .link-card p {
   margin: 0;
   color: #475467;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.article-card li {
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .article-card ul {
@@ -306,7 +368,6 @@ main {
 
 .article-card a {
   align-self: flex-start;
-  margin-top: auto;
   color: var(--blue);
   font-weight: 900;
   text-decoration: none;
@@ -347,6 +408,7 @@ main {
     linear-gradient(135deg, rgba(8, 24, 45, 0.92), rgba(7, 94, 232, 0.8)),
     var(--navy);
   border-radius: 24px;
+  overflow: hidden;
 }
 
 .article-hero .eyebrow,
@@ -370,18 +432,34 @@ main {
   font-weight: 800;
 }
 
-.article-layout {
+.article-top-image {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 24px;
+  place-items: center;
+  margin: 18px 0 0;
+  padding: clamp(10px, 2vw, 16px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.article-top-image img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(72vh, 760px);
+  object-fit: contain;
+}
+
+.article-layout {
+  display: block;
   margin-top: 24px;
-  align-items: start;
 }
 
 .article-summary {
-  position: sticky;
-  top: 92px;
-  padding: 18px;
+  margin-top: 24px;
+  padding: clamp(18px, 3vw, 24px);
+  border-left: 5px solid var(--blue);
 }
 
 .article-summary h2 {
@@ -395,6 +473,12 @@ main {
   padding-left: 1.2em;
 }
 
+.article-summary ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+
 .article-summary li,
 .content-list li {
   margin: 7px 0;
@@ -402,6 +486,7 @@ main {
 
 .article-body {
   min-width: 0;
+  overflow: hidden;
   padding: clamp(20px, 4vw, 42px);
   background: var(--paper);
   border: 1px solid var(--line);
@@ -426,6 +511,7 @@ main {
   margin: 16px 0;
   color: #344054;
   font-size: 1.02rem;
+  overflow-wrap: anywhere;
 }
 
 .article-lead {
@@ -455,10 +541,14 @@ blockquote {
 }
 
 .article-image img {
-  width: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 78vh;
   height: auto;
   object-fit: contain;
   background: #fff;
+  margin: 0 auto;
 }
 
 .article-image figcaption {
@@ -545,7 +635,7 @@ blockquote {
 
 .link-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -559,6 +649,8 @@ blockquote {
   padding: 28px 0 44px;
   color: var(--muted);
   border-top: 1px solid var(--line);
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .footer p {
@@ -587,11 +679,7 @@ blockquote {
   }
 
   .article-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .article-summary {
-    position: static;
+    display: block;
   }
 }
 
@@ -602,15 +690,42 @@ blockquote {
   }
 
   .cards,
+  .series-list,
   .compare-grid,
   .link-list {
+    grid-template-columns: 1fr;
+  }
+
+  .article-card {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .card-thumb {
+    min-height: 170px;
+    max-height: 280px;
+  }
+
+  .article-card-body {
+    width: 100%;
+    max-width: calc(100vw - 64px);
+  }
+
+  .article-card h3 {
+    font-size: 1.28rem;
+    line-height: 1.45;
+  }
+
+  .article-summary ul {
     grid-template-columns: 1fr;
   }
 
   .hero-copy h1,
   .page-title h1,
   .article-hero h1 {
-    font-size: clamp(2.15rem, 12vw, 3.2rem);
+    font-size: clamp(1.72rem, 8vw, 2.25rem);
+    line-height: 1.16;
+    word-break: break-all;
   }
 
   .article-hero,

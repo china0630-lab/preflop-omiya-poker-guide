@@ -2,6 +2,10 @@ const app = document.querySelector("#app");
 const articles = window.PREFLOP_ARTICLES || [];
 const externalLinks = window.PREFLOP_LINKS || [];
 
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
@@ -21,7 +25,11 @@ function articleUrl(article) {
 }
 
 function sortedArticles() {
-  return [...articles].sort((a, b) => b.date.localeCompare(a.date));
+  return [...articles].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function episodeLabel(index) {
+  return `第${index + 1}回`;
 }
 
 function renderHome() {
@@ -61,7 +69,7 @@ function renderHome() {
       </div>
     </section>
 
-    ${renderArticleGrid(latest, "記事一覧", "現在掲載している記事")}
+    ${renderArticleGrid(latest, "連載一覧", "第1回から順番に読む")}
     ${renderOtherContents()}
   `;
 }
@@ -73,38 +81,41 @@ function renderArticlesPage() {
       <h1>記事一覧</h1>
       <p>いま掲載している記事だけを一覧にしています。</p>
     </section>
-    ${renderArticleGrid(sortedArticles(), "掲載記事", "ゆうきさんの記事内容の整理")}
+    ${renderArticleGrid(sortedArticles(), "連載一覧", "古い記事から順番に並べています")}
   `;
 }
 
 function renderArticleGrid(items, title, subtitle) {
   return `
-    <section id="articles" class="article-library">
+    <section class="article-library">
       <div class="section-head">
         <div>
           <p class="eyebrow">${escapeHtml(subtitle)}</p>
           <h2>${escapeHtml(title)}</h2>
         </div>
       </div>
-      <div class="cards">
-        ${items.map((article) => `
+      <div class="series-list">
+        ${items.map((article, index) => `
           <article class="article-card">
             ${article.heroImage ? `
               <figure class="card-thumb">
-                <img src="${escapeHtml(article.heroImage)}" alt="" />
+                <img src="${escapeHtml(article.heroImage)}?v=20260712-series-mobile-v3" alt="" />
               </figure>
             ` : ""}
-            <div class="card-meta">
-              <span>${escapeHtml(article.category)}</span>
-              <span>${formatDate(article.date)}</span>
-              <span>読了 ${escapeHtml(article.readTime)}</span>
+            <div class="article-card-body">
+              <div class="card-meta">
+                <span>${episodeLabel(index)}</span>
+                <span>${escapeHtml(article.category)}</span>
+                <span>${formatDate(article.date)}</span>
+                <span>読了 ${escapeHtml(article.readTime)}</span>
+              </div>
+              <h3>${escapeHtml(article.title)}</h3>
+              <p>${escapeHtml(article.subtitle)}</p>
+              <ul>
+                ${article.summary.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ul>
+              <a href="${articleUrl(article)}">記事を読む</a>
             </div>
-            <h3>${escapeHtml(article.title)}</h3>
-            <p>${escapeHtml(article.subtitle)}</p>
-            <ul>
-              ${article.summary.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-            <a href="${articleUrl(article)}">記事を読む</a>
           </article>
         `).join("")}
       </div>
@@ -118,6 +129,10 @@ function renderArticlePage(id) {
     renderNotFound();
     return;
   }
+  const bodyHtml = article.body
+    .filter((block) => !(block.type === "image" && block.src === article.heroImage))
+    .map(renderBlock)
+    .join("");
 
   app.innerHTML = `
     <article class="article-page">
@@ -133,15 +148,20 @@ function renderArticlePage(id) {
           </div>
         </div>
       </header>
-      <div class="article-layout">
-        <aside class="article-summary">
+      ${article.heroImage ? `
+        <figure class="article-top-image">
+          <img src="${escapeHtml(article.heroImage)}?v=20260712-series-mobile-v3" alt="" />
+        </figure>
+      ` : ""}
+      <section class="article-summary">
           <h2>この記事の要点</h2>
           <ul>
             ${article.summary.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
-        </aside>
+      </section>
+      <div class="article-layout">
         <div class="article-body">
-          ${article.body.map(renderBlock).join("")}
+          ${bodyHtml}
         </div>
       </div>
     </article>
@@ -163,7 +183,7 @@ function renderBlock(block) {
     case "image":
       return `
         <figure class="article-image">
-          <img src="${escapeHtml(block.src)}" alt="${escapeHtml(block.alt)}" />
+          <img src="${escapeHtml(block.src)}?v=20260712-series-mobile-v3" alt="${escapeHtml(block.alt)}" />
           <figcaption>${escapeHtml(block.caption)}</figcaption>
         </figure>
       `;
@@ -220,7 +240,7 @@ function renderOtherPage() {
 
 function renderOtherContents() {
   return `
-    <section id="other" class="other-contents">
+    <section class="other-contents">
       <div class="section-head">
         <div>
           <p class="eyebrow">Links</p>
@@ -228,9 +248,9 @@ function renderOtherContents() {
         </div>
       </div>
       <div class="link-list">
-        ${externalLinks.map((link) => `
+        ${externalLinks.map((link, index) => `
           <a class="link-card" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
-            <span>外部リンク</span>
+            <span>X記事 ${String(index + 1).padStart(2, "0")}</span>
             <strong>${escapeHtml(link.title)}</strong>
             <p>${escapeHtml(link.description)}</p>
           </a>
@@ -270,7 +290,7 @@ function render() {
   else renderNotFound();
 
   app.focus({ preventScroll: true });
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo(0, 0);
 }
 
 window.addEventListener("hashchange", render);
