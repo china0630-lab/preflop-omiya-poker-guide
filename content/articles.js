@@ -353,5 +353,10 @@ window.PREFLOP_LINKS = [
     title: "大型大会で高確率で勝つ人の“観察で得た情報”の使い方",
     date: "2026-07-14",
     url: "https://x.com/yuki_ourspace/status/2076586864119841131?s=46"
+  },
+  {
+    title: "ポーカーで長く勝つメンタル ※超重要",
+    date: "2026-07-14",
+    url: "https://x.com/yuki_ourspace/status/2076968138810515528?s=46"
   }
 ];
